@@ -29,6 +29,7 @@
         <item name="actionModeBackground">@drawable/cab_background_top_thecrazylab</item>
         <item name="actionModeSplitBackground">@drawable/cab_background_bottom_thecrazylab</item>
         <item name="actionModeCloseButtonStyle">@style/ActionButton.CloseMode.Thecrazylab</item>
+        <item name="android:windowBackground">@color/window_background</item>
 
                 <!-- Light.DarkActionBar specific -->
         <item name="actionBarWidgetTheme">@style/Theme.Thecrazylab.Widget</item>

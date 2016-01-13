@@ -3,6 +3,9 @@ package com.thecrazylab.ux.thecrazylab;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBar;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,13 +18,15 @@ import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-
+    Toolbar toolbar;
+    DrawerLayout drawer;
+    String drawerTitle;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+        setToolbar();
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -32,14 +37,83 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-        DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         ActionBarDrawerToggle toggle = new ActionBarDrawerToggle(
                 this, drawer, toolbar, R.string.navigation_drawer_open, R.string.navigation_drawer_close);
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
         NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
-        navigationView.setNavigationItemSelectedListener(this);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
+
+        drawerTitle = getResources().getString(R.string.home_item);
+        if (savedInstanceState == null) {
+            selectItem(drawerTitle);
+        }
+        //navigationView.setNavigationItemSelectedListener(this);
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // Marcar item presionado
+                        menuItem.setChecked(true);
+                        // Crear nuevo fragmento
+                        String title = menuItem.getTitle().toString();
+                        selectItem(title);
+                        return true;
+                    }
+                }
+        );
+    }
+
+    private void setToolbar(){
+         toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        final ActionBar ab = getSupportActionBar();
+        if(ab!=null){
+            //
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+
+    /*private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // Marcar item presionado
+                        menuItem.setChecked(true);
+                        // Crear nuevo fragmento
+                        String title = menuItem.getTitle().toString();
+                        selectItem(title);
+                        return true;
+                    }
+                }
+        );
+    }*/
+
+    private void selectItem(String title) {
+        // Enviar título como arguemento del fragmento
+        Bundle args = new Bundle();
+        args.putString(com.thecrazylab.ux.thecrazylab.PlaceholderFragment.ARG_SECTION_TITLE, title);
+        Fragment fragment = PlaceholderFragment.newInstance(title);
+        fragment.setArguments(args);
+        FragmentManager fragmentManager = getSupportFragmentManager();
+        fragmentManager
+                .beginTransaction()
+                .replace(R.id.main_content, fragment)
+                .commit();
+        drawer.closeDrawers(); // Cerrar drawer
+        setTitle(title); // Setear título actual
     }
 
     @Override
